@@ -1,32 +1,69 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {IPatientProfile} from './models/patient-profile.model';
+import {PatientProfileService} from './core/services/patient-profile.service';
 
 @Component({
-  selector: 'app-root',
-  template: `
-    <!--The content below is only a placeholder and can be replaced.-->
-    <div style="text-align:center" class="content">
-      <h1>
-        Welcome to {{title}}!
-      </h1>
-      <span style="display: block">{{ title }} app is running!</span>
-      <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-    </div>
-    <h2>Here are some links to help you start: </h2>
-    <ul>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-      </li>
-    </ul>
-    <router-outlet></router-outlet>
-  `,
-  styles: []
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  title = 'smartomica-test-app';
+    isEditMode: boolean = false;
+
+    patientProfileForm: FormGroup;
+
+    personalData: FormGroup = new FormGroup({});
+
+    constructor(public patientProfileService: PatientProfileService) {
+        this.patientProfileForm = this.createFormGroup()
+    }
+
+    createFormGroup(): FormGroup {
+        this.personalData = new FormGroup({
+            firstName: new FormControl('', [Validators.required, Validators.minLength(3)]),
+            lastName: new FormControl('', [Validators.required, Validators.minLength(3)]),
+            middleName: new FormControl(),
+            age: new FormControl(null, [Validators.required, Validators.pattern('^[0-9]*$')]),
+            sex: new FormControl('', [Validators.required]),
+        });
+
+        return new FormGroup({
+            personalData: this.personalData,
+            date: new FormControl(null),
+            complaints: new FormControl('', [Validators.required]),
+        });
+    }
+
+    onEditModeChange(): void {
+        this.isEditMode = !this.isEditMode;
+    }
+
+    onSubmit(): void {
+        if (this.patientProfileForm.valid) {
+            const result: IPatientProfile = Object.assign({}, this.patientProfileForm.value);
+            result.personalData = Object.assign({}, result.personalData);
+
+            this.patientProfileService.updatePatientProfile(result);
+            this.isEditMode = !this.isEditMode;
+        } else {
+            alert('Invalid form!')
+        }
+    }
+
+    onReset(): void {
+        // this.patientProfileForm.reset();
+        this.patientProfileForm.reset({
+            personalData: {
+                firstName: '',
+                lastName: '',
+                middleName: '',
+                age: null,
+                sex: '',
+            },
+            date: null,
+            complaints: '',
+        });
+    }
 }
