@@ -127,7 +127,7 @@
 <ng-template #minLengthAlertTemplate
              let-field="field">
     <div class="alert alert-danger"
-         *ngIf="personalData.controls[field]?.hasError('minLength') && personalData.controls[field].touched">
+         *ngIf="personalData.controls[field]?.hasError('minlength') && personalData.controls[field].touched">
         Minimum number of characters - 3
     </div>
 </ng-template>
