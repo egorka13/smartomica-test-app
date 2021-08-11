@@ -6,7 +6,7 @@ import {IPatientProfile} from '../../models/patient-profile.model';
 })
 export class PatientProfileService {
 
-    public patientProfile: IPatientProfile = {
+    private initialPatientProfileData: IPatientProfile = {
         personalData: {
             firstName: '',
             lastName: '',
@@ -17,6 +17,8 @@ export class PatientProfileService {
         date: null,
         complaints: '',
     };
+
+    public patientProfile: IPatientProfile = JSON.parse(JSON.stringify(this.initialPatientProfileData));
 
     /**
      * This function updates personal patient data.
@@ -33,7 +35,7 @@ export class PatientProfileService {
      * @memberof PatientProfileService
      */
     public resetPersonalData(): void {
-
+        this.patientProfile = JSON.parse(JSON.stringify(this.initialPatientProfileData));
     }
 
     /**
@@ -41,9 +43,9 @@ export class PatientProfileService {
      * @memberof PatientProfileService
      */
     private static formatDate(date: Date): string {
-        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
-        let day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+        let year = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
+        let month = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
+        let day = new Intl.DateTimeFormat('en', {day: '2-digit'}).format(date);
         return `${day}-${month}-${year}`;
     }
 }

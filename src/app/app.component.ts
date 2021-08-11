@@ -53,7 +53,7 @@ export class AppComponent {
     }
 
     onReset(): void {
-        // this.patientProfileForm.reset();
+        this.patientProfileService.resetPersonalData();
         this.patientProfileForm.reset({
             personalData: {
                 firstName: '',
